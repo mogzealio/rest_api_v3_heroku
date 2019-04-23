@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
@@ -10,7 +12,9 @@ from resources.store_resource import Store, StoreList
 app = Flask(__name__)
 
 # tell the app where the db is
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+# either, the db defined by Heroku's DATABASE_URL env variable or, if that doesn't exist
+# a local SQLite DB file (for dev purposes)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 
 # turn off Flask's SQLALCHEMY modifications tracker (not the underlying one)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
