@@ -17,16 +17,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'smalls'
 api = Api(app)
 
-
-# Before any requests are made, create data.db and all required tables, unless
-# they already exist.
-@app.before_first_request  # this is a Flask decorator
-def create_tables():
-    db.create_all()
-    # can only create the tables it 'sees'. It's important to import
-    # everything we need SQLAlchemy to see, and create tables for.
-
-
 jwt = JWT(app, authenticate, identity)
 
 # ENDPOINTS / RESOURCES
@@ -47,6 +37,10 @@ api.add_resource(StoreList, '/stores')
 # was explicitly run by Python, i.e. not imported by another file.
 # importing a module in Python runs executable lines
 # when you run a python file, python assigns it __main__
+# ** HEROKU ** However, when deployed to Heroku, this isn't the case since
+# uwsgi is directly loading the app variable. Therefore, db never gets
+# imported, producing an error when trying to access app.
+# moved to run.py to fix this.
 if __name__ == '__main__':
     from db import db
     db.init_app(app)
